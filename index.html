@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnkiBeta | فلش‌کارت حرفه‌ای</title>
+    <!-- Bootstrap 5 RTL & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #0b0e1a;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            transition: background-image 0.8s ease;
+            background-size: cover;
+            background-position: center;
+        }
+        /* ویدیو پس‌زمینه */
+        #bgVideo {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            display: none;
+        }
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(8, 12, 25, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: -1;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 24px;
+            color: #f0f4ff;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            transition: 0.3s;
+        }
+        .glass:hover { border-color: rgba(255,255,255,0.25); }
+        .btn-anki {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 60px;
+            padding: 10px 24px;
+            transition: 0.25s;
+            font-weight: 500;
+        }
+        .btn-anki:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: #000;
+            transform: scale(1.02);
+        }
+        .btn-anki-primary { background: #6c5ce7; border-color: #6c5ce7; }
+        .btn-anki-primary:hover { background: #5a4bd1; border-color: #5a4bd1; color: #fff; }
+        .btn-anki-success { background: #00b894; border-color: #00b894; }
+        .btn-anki-success:hover { background: #00a381; color: #fff; }
+        .btn-anki-danger { background: #e17055; border-color: #e17055; }
+        
+        .card-flip {
+            perspective: 1000px;
+            min-height: 250px;
+            cursor: pointer;
+        }
+        .card-flip-inner {
+            position: relative;
+            width: 100%;
+            min-height: 250px;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+        .card-flip.flipped .card-flip-inner { transform: rotateX(180deg); }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            min-height: 250px;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: rgba(20, 30, 50, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-back { transform: rotateX(180deg); background: rgba(108, 92, 231, 0.25); }
+        .badge-type { background: #fd79a8; color: #000; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; }
+        .list-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            border-right: 4px solid #6c5ce7;
+            transition: 0.2s;
+        }
+        .list-item:hover { background: rgba(255,255,255,0.1); }
+        .offcanvas { background: rgba(10, 14, 30, 0.95); backdrop-filter: blur(30px); color: #fff; }
+        .offcanvas .btn-close { filter: invert(1); }
+        .nav-link-custom {
+            color: #b0b8d1 !important;
+            padding: 12px 18px;
+            border-radius: 14px;
+            transition: 0.2s;
+            font-weight: 400;
+        }
+        .nav-link-custom:hover { background: rgba(108, 92, 231, 0.25); color: #fff !important; }
+        .nav-link-custom i { margin-left: 14px; width: 24px; }
+        .timer-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .timer-bar span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #6c5ce7, #00b894); transition: width 0.5s linear; }
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 16px;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.15);
+            border-color: #6c5ce7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+            color: #fff;
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.4); }
+        label { font-weight: 400; color: #c8d0e6; margin-bottom: 6px; }
+        .toast-container { z-index: 9999; }
+        .toast { background: rgba(20, 30, 50, 0.9) !important; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+        .stat-number { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #6c5ce7, #00b894); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .review-btn-group .btn { border-radius: 60px; padding: 12px 24px; font-weight: 600; min-width: 80px; }
+        @media (max-width: 576px) { .glass { padding: 16px; } .stat-number { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+
+    <!-- ویدیو و اوورلی پس‌زمینه -->
+    <video id="bgVideo" autoplay muted loop playsinline></video>
+    <div class="bg-overlay" id="bgOverlay"></div>
+
+    <!-- توست‌ها -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+    <!-- ===== منوی کشویی ===== -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mainSidebar">
+        <div class="offcanvas-header border-bottom border-light border-opacity-10">
+            <h5 class="offcanvas-title"><i class="bi bi-stars text-warning"></i> منوی AnkiBeta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="nav flex-column">
+                <a class="nav-link-custom" href="#" onclick="navigateTo('home')"><i class="bi bi-house-door"></i> داشبورد</a>
+                <a class="nav-link-custom" href="#" onclick="navigateTo('review')"><i class="bi bi-arrow-repeat"></i> مرور امروز</a>
+                <a class="nav-link-custom" href="#" onclick="navigateTo('add')"><i class="bi bi-plus-circle"></i> کارت جدید</a>
+                <a class="nav-link-custom" href="#" onclick="navigateTo('list')"><i class="bi bi-list-ul"></i> لیست کارت‌ها</a>
+                <a class="nav-link-custom" href="#" onclick="navigateTo('settings')"><i class="bi bi-gear"></i> تنظیمات</a>
+                <hr class="bg-light bg-opacity-10">
+                <a class="nav-link-custom" href="#" onclick="exportData()"><i class="bi bi-download"></i> خروجی (Export)</a>
+                <a class="nav-link-custom" href="#" onclick="document.getElementById('importFile').click()"><i class="bi bi-upload"></i> بازیابی (Import)</a>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== محتوای اصلی ===== -->
+    <div class="container py-4">
+        <!-- هدر -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="text-white fw-bold"><i class="bi bi-brain text-warning"></i> AnkiBeta</h1>
+                <small class="text-light opacity-50">نسخه ۰.۹ بتا | قدرتمند مثل انکی</small>
+            </div>
+            <button class="btn btn-anki btn-lg" data-bs-toggle="offcanvas" data-bs-target="#mainSidebar">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <!-- نوار پیشرفت تایمر پس‌زمینه -->
+        <div class="timer-bar mb-3"><span id="bgProgressBar" style="width:0%"></span></div>
+
+        <!-- ===== صفحه HOME ===== -->
+        <div id="page-home">
+            <div class="glass text-center">
+                <div class="row g-3">
+                    <div class="col-6 col-md-3"><div class="stat-number" id="statTotal">0</div><small>کل کارت‌ها</small></div>
+                    <div class="col-6 col-md-3"><div class="stat-number" id="statDue">0</div><small>امروز برای مرور</small></div>
+                    <div class="col-6 col-md-3"><div class="stat-number" id="statReviewed">0</div><small>کل مرورها</small></div>
+                    <div class="col-6 col-md-3"><div class="stat-number" id="statType">3</div><small>نوع کارت</small></div>
+                </div>
+                <hr class="border-light border-opacity-10">
+                <button class="btn btn-anki btn-anki-primary btn-lg px-5" onclick="navigateTo('review')">
+                    <i class="bi bi-play-fill"></i> شروع مرور امروز
+                </button>
+                <p class="mt-2 text-light opacity-50 small">کارت‌های عقب‌افتاده هم نمایش داده می‌شوند</p>
+            </div>
+        </div>
+
+        <!-- ===== صفحه REVIEW ===== -->
+        <div id="page-review" style="display:none;">
+            <div class="glass" id="reviewContainer">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4><i class="bi bi-arrow-repeat text-success"></i> مرور</h4>
+                    <span id="reviewProgress" class="badge bg-light text-dark">۰ / ۰</span>
+                </div>
+                <div id="reviewCardArea">
+                    <div class="text-center py-5">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size:3rem;"></i>
+                        <h5 class="mt-3">همه‌ی کارت‌های امروز رو مرور کردی! 🎉</h5>
+                        <button class="btn btn-anki mt-3" onclick="navigateTo('home')">برگشت به داشبورد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== صفحه ADD ===== -->
+        <div id="page-add" style="display:none;">
+            <div class="glass">
+                <h4><i class="bi bi-plus-circle-fill text-success"></i> کارت جدید</h4>
+                <hr>
+                <div class="mb-3">
+                    <label>نوع کارت</label>
+                    <select id="cardType" class="form-select" onchange="changeCardFields()">
+                        <option value="normal">📝 معمولی (Front / Back)</option>
+                        <option value="coding">💻 کدنویسی و امنیت</option>
+                        <option value="spanish">🇪🇸 اسپانیایی</option>
+                    </select>
+                </div>
+                <div id="dynamicFields">
+                    <div class="mb-2"><input id="f_front" class="form-control" placeholder="متن جلو (Front)"></div>
+                    <div class="mb-2"><input id="f_back" class="form-control" placeholder="متن پشت (Back)"></div>
+                </div>
+                <div id="extraFields" style="display:none;"></div>
+                <button class="btn btn-anki btn-anki-success w-100 mt-3" onclick="addCard()"><i class="bi bi-save"></i> ذخیره</button>
+            </div>
+        </div>
+
+        <!-- ===== صفحه LIST ===== -->
+        <div id="page-list" style="display:none;">
+            <div class="glass">
+                <h4><i class="bi bi-table"></i> لیست کارت‌ها</h4>
+                <hr>
+                <input id="searchInput" class="form-control mb-3" placeholder="🔍 جستجو در کارت‌ها..." oninput="renderList()">
+                <div id="cardListContainer"></div>
+            </div>
+        </div>
+
+        <!-- ===== صفحه SETTINGS ===== -->
+        <div id="page-settings" style="display:none;">
+            <div class="glass">
+                <h4><i class="bi bi-sliders2"></i> تنظیمات</h4>
+                <hr>
+                <div class="mb-3">
+                    <label>📅 تاریخ شمسی (ورودی)</label>
+                    <input id="shamsiDateInput" class="form-control" placeholder="مثلاً 1405/05/25">
+                </div>
+                <div class="mb-3">
+                    <label>🖼️ لینک تصویر یا ویدیو (پس‌زمینه)</label>
+                    <div class="input-group">
+                        <input id="bgUrlInput" class="form-control" placeholder="https://...jpg یا .mp4" value="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800">
+                        <button class="btn btn-anki-primary" onclick="applyBackground()">اعمال</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label>⏱️ تغییر خودکار (دقیقه)</label>
+                    <input id="bgIntervalInput" type="number" class="form-control" value="1" min="0.5" step="0.5">
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <label>📂 پشتیبان خودکار (فعال)</label>
+                    <button class="btn btn-anki btn-sm" onclick="manualBackup()"><i class="bi bi-save"></i> بکاپ دستی</button>
+                    <button class="btn btn-anki btn-sm btn-anki-danger" onclick="restoreBackup()"><i class="bi bi-arrow-counterclockwise"></i> بازیابی بکاپ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==========================================
+        //  هسته مرکزی
+        // ==========================================
+        const STORAGE_KEY = 'anki_beta_cards';
+        const BACKUP_KEY = 'anki_beta_backup';
+        let reviewQueue = [];
+        let currentReviewIndex = 0;
+
+        // ---------- دیتابیس ----------
+        function getCards() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+        function saveCards(cards) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+            localStorage.setItem(BACKUP_KEY, JSON.stringify(cards));
+            updateStats();
+            checkNotification(cards.length);
+            renderList();
+        }
+
+        // ---------- آمار و نوتیف ----------
+        function updateStats() {
+            const cards = getCards();
+            document.getElementById('statTotal').innerText = cards.length;
+            const today = new Date().toISOString().split('T')[0];
+            const due = cards.filter(c => (c.nextReviewDate || today) <= today).length;
+            document.getElementById('statDue').innerText = due;
+            const reviews = cards.reduce((acc, c) => acc + (c.reviewCount || 0), 0);
+            document.getElementById('statReviewed').innerText = reviews;
+        }
+        function checkNotification(count) {
+            if (count > 0 && count % 10 === 0) showToast(`🎉 تبریک! به ${count} کارت رسیدی!`);
+        }
+        function showToast(msg) {
+            const container = document.querySelector('.toast-container');
+            const t = document.createElement('div');
+            t.className = 'toast align-items-center text-white border-0 show';
+            t.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+            container.appendChild(t);
+            setTimeout(() => t.remove(), 5000);
+        }
+
+        // ---------- ناوبری ----------
+        function navigateTo(page) {
+            ['home','review','add','list','settings'].forEach(p => {
+                document.getElementById(`page-${p}`).style.display = (p === page) ? 'block' : 'none';
+            });
+            if (page === 'home') updateStats();
+            if (page === 'list') renderList();
+            if (page === 'review') startReview();
+            try { bootstrap.Offcanvas.getInstance(document.getElementById('mainSidebar'))?.hide(); } catch(e) {}
+        }
+
+        // ---------- فیلدهای پویا ----------
+        function changeCardFields() {
+            const type = document.getElementById('cardType').value;
+            const extra = document.getElementById('extraFields');
+            let html = '';
+            if (type === 'coding') {
+                html = `<div class="mb-2"><input id="f_code" class="form-control" placeholder="💻 قطعه کد"></div>
+                        <div class="mb-2"><input id="f_hint" class="form-control" placeholder="🔐 نکته امنیتی"></div>`;
+                extra.style.display = 'block';
+            } else if (type === 'spanish') {
+                html = `<div class="mb-2"><input id="f_pron" class="form-control" placeholder="🔊 تلفظ"></div>
+                        <div class="mb-2"><input id="f_example" class="form-control" placeholder="📝 مثال جمله"></div>`;
+                extra.style.display = 'block';
+            } else { extra.style.display = 'none'; }
+            extra.innerHTML = html;
+        }
+        window.onload = function() {
+            changeCardFields();
+            applyBackground();
+            updateStats();
+            renderList();
+            loadSettings();
+            startBgTimer();
+            navigateTo('home');
+        };
+
+        // ---------- افزودن کارت ----------
+        function addCard() {
+            const type = document.getElementById('cardType').value;
+            const front = document.getElementById('f_front').value.trim();
+            const back = document.getElementById('f_back').value.trim();
+            if (!front || !back) return alert('لطفاً جلو و پشت را پر کن!');
+            let card = { id: Date.now(), type, front, back, interval: 0, easeFactor: 2.5, repetitions: 0, reviewCount: 0, nextReviewDate: new Date().toISOString().split('T')[0] };
+            if (type === 'coding') { card.codeSnippet = document.getElementById('f_code')?.value || ''; card.hint = document.getElementById('f_hint')?.value || ''; }
+            if (type === 'spanish') { card.pronunciation = document.getElementById('f_pron')?.value || ''; card.exampleSentence = document.getElementById('f_example')?.value || ''; }
+            const cards = getCards();
+            cards.push(card);
+            saveCards(cards);
+            document.querySelectorAll('#page-add input').forEach(i => i.value = '');
+            showToast('✅ کارت اضافه شد!');
+            navigateTo('list');
+        }
+
+        // ---------- رندر لیست با جستجو ----------
+        function renderList() {
+            const container = document.getElementById('cardListContainer');
+            let cards = getCards();
+            const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+            if (q) cards = cards.filter(c => c.front.includes(q) || c.back.includes(q));
+            if (!cards.length) { container.innerHTML = '<p class="text-light opacity-50">کارتی پیدا نشد.</p>'; return; }
+            let html = '';
+            cards.slice().reverse().forEach(c => {
+                let extra = '';
+                if (c.type === 'coding') extra = `| 💻 ${c.codeSnippet || '-'} | 🔐 ${c.hint || '-'}`;
+                else if (c.type === 'spanish') extra = `| 🔊 ${c.pronunciation || '-'} | 📝 ${c.exampleSentence || '-'}`;
+                const due = (c.nextReviewDate || '') <= new Date().toISOString().split('T')[0] ? '🔴' : '✅';
+                html += `<div class="list-item d-flex justify-content-between align-items-center">
+                    <div><span class="badge-type">${c.type}</span>
