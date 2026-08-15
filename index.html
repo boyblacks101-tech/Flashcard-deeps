@@ -3,398 +3,716 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnkiPro — Smart Flashcards</title>
-    <!-- Font & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>TROVIRUSES</title>
+
+    <!-- ===== CSS ===== -->
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0b0d14;
-            color: #eef2f6;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            background: #000000;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        body.sheet-open {
+            overflow: hidden;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 480px;
             min-height: 100vh;
-            background-size: cover;
-            background-position: center;
-            transition: background-image 0.7s ease;
-        }
-        #bgVideo {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            object-fit:cover; z-index:-2; display:none;
-        }
-        .bg-overlay {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(11,13,20,0.75);
-            backdrop-filter:blur(3px); z-index:-1;
-        }
-        ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-track { background:#1a1e2a; }
-        ::-webkit-scrollbar-thumb { background:#4f46e5; border-radius:10px; }
-
-        /* ---- SIDEBAR ---- */
-        .offcanvas {
-            background: rgba(16,20,32,0.96);
-            backdrop-filter: blur(20px);
-            border-right:1px solid rgba(255,255,255,0.06);
-            width:270px; color:#b0b8cf;
-        }
-        .offcanvas .btn-close { filter:invert(1) brightness(2); }
-        .brand {
-            font-size:1.6rem; font-weight:700;
-            background:linear-gradient(135deg,#818cf8,#4f46e5);
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-            padding:20px 0 12px 0; border-bottom:1px solid rgba(255,255,255,0.05);
-        }
-        .nav-item {
-            display:flex; align-items:center; gap:14px;
-            padding:12px 16px; margin:4px 10px;
-            border-radius:12px; color:#9aa3b8; font-weight:500;
-            text-decoration:none; transition:0.2s;
-        }
-        .nav-item i { font-size:1.3rem; width:26px; }
-        .nav-item:hover, .nav-item.active {
-            background:rgba(79,70,229,0.2); color:#fff; transform:translateX(4px);
+            margin: 0 auto;
+            position: relative;
+            padding-bottom: 90px;
+            background: #000000;
         }
 
-        /* ---- GLASS PANEL ---- */
-        .glass {
-            background: rgba(22,28,44,0.7);
-            backdrop-filter: blur(14px);
-            border:1px solid rgba(255,255,255,0.06);
-            border-radius:28px;
-            padding:28px 24px;
-            box-shadow:0 20px 50px -10px rgba(0,0,0,0.8);
-        }
-        .stat-box {
-            background:rgba(255,255,255,0.03);
-            border-radius:18px; padding:18px 12px;
-            border:1px solid rgba(255,255,255,0.04);
-            text-align:center;
-        }
-        .stat-number {
-            font-size:2.6rem; font-weight:700;
-            background:linear-gradient(135deg,#a5b4fc,#4f46e5);
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        /* ===== SECTIONS ===== */
+        .section {
+            display: none;
+            width: 100%;
+            min-height: calc(100vh - 90px);
+            background: #000000;
         }
 
-        .btn-pro {
-            padding:10px 28px; border-radius:60px; border:none;
-            font-weight:600; transition:0.25s;
-            background:rgba(255,255,255,0.06);
-            color:#fff; border:1px solid rgba(255,255,255,0.08);
+        .section.active {
+            display: block;
         }
-        .btn-pro:hover { background:rgba(255,255,255,0.14); transform:scale(1.02); }
-        .btn-primary { background:#4f46e5; border-color:#4f46e5; }
-        .btn-primary:hover { background:#6366f1; }
-        .btn-success { background:#059669; border-color:#059669; }
-        .btn-success:hover { background:#10b981; }
-        .btn-danger { background:#dc2626; border-color:#dc2626; }
-        .btn-danger:hover { background:#ef4444; }
 
-        .form-control, .form-select {
-            background:rgba(255,255,255,0.05);
-            border:1px solid rgba(255,255,255,0.08);
-            border-radius:16px; color:#fff; padding:12px 18px;
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav-wrapper {
+            position: fixed;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+            z-index: 1000;
+            pointer-events: none;
         }
-        .form-control:focus, .form-select:focus {
-            background:rgba(255,255,255,0.09);
-            border-color:#4f46e5;
-            box-shadow:0 0 0 4px rgba(79,70,229,0.2);
-            color:#fff;
-        }
-        .form-control::placeholder { color:rgba(255,255,255,0.3); }
 
-        /* ---- FLIP CARD ---- */
-        .flip-wrap {
-            perspective:1000px; min-height:260px; cursor:pointer;
+        .bottom-nav {
+            width: 100%;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 4px;
+            padding: 5px;
+            background: #111111;
+            border: 1px solid #252525;
+            border-radius: 22px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.75);
+            pointer-events: auto;
         }
-        .flipper {
-            position:relative; width:100%; min-height:260px;
-            transition:transform 0.5s cubic-bezier(0.23,1,0.32,1);
-            transform-style:preserve-3d;
-        }
-        .flip-wrap.flipped .flipper { transform:rotateX(180deg); }
-        .front, .back {
-            position:absolute; width:100%; min-height:260px;
-            backface-visibility:hidden; border-radius:24px;
-            padding:30px 20px; display:flex; flex-direction:column;
-            justify-content:center; align-items:center; text-align:center;
-            background:rgba(30,36,54,0.85); backdrop-filter:blur(8px);
-            border:1px solid rgba(255,255,255,0.06);
-        }
-        .back { transform:rotateX(180deg); background:rgba(79,70,229,0.15); }
 
-        .badge-type {
-            background:rgba(79,70,229,0.3); color:#a5b4fc;
-            padding:4px 14px; border-radius:40px; font-size:0.7rem; font-weight:600;
+        .nav-button {
+            flex: 1;
+            min-width: 0;
+            height: 54px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border: 0;
+            border-radius: 16px;
+            background: transparent;
+            color: #888888;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
         }
-        .list-item {
-            background:rgba(255,255,255,0.02);
-            border-radius:14px; padding:14px 18px; margin-bottom:8px;
-            border-left:3px solid #4f46e5;
-            display:flex; justify-content:space-between; align-items:center;
-            transition:0.2s;
+
+        .nav-button:active {
+            transform: scale(0.94);
         }
-        .list-item:hover { background:rgba(255,255,255,0.05); }
-        .timer-bar {
-            height:3px; background:rgba(255,255,255,0.06);
-            border-radius:4px; overflow:hidden; margin-bottom:18px;
+
+        .nav-button svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.2s ease;
         }
-        .timer-bar span {
-            display:block; height:100%; width:0%;
-            background:linear-gradient(90deg,#4f46e5,#06b6d4);
-            transition:width 0.5s linear;
+
+        .nav-button span {
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 1;
+            white-space: nowrap;
         }
-        .review-btns .btn {
-            border-radius:60px; padding:12px 26px; font-weight:700; min-width:80px;
+
+        .nav-button.active {
+            background: #7c3aed;
+            color: #ffffff;
+            box-shadow: 0 0 18px rgba(124, 58, 237, 0.25);
         }
-        .toast-container { z-index:9999; }
-        .toast-custom {
-            background:rgba(20,26,42,0.95) !important;
-            backdrop-filter:blur(16px);
-            border:1px solid rgba(255,255,255,0.06);
-            color:#fff; border-radius:16px;
+
+        .nav-button.active svg {
+            transform: translateY(-1px);
         }
-        @media(max-width:576px) {
-            .glass { padding:16px; }
-            .stat-number { font-size:1.8rem; }
+
+        /* ===== SHEET OVERLAY ===== */
+        .sheet-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.72);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .sheet-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ===== BOTTOM SHEET ===== */
+        .bottom-sheet {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            background: #111111;
+            border: 1px solid #252525;
+            border-bottom: 0;
+            border-radius: 28px 28px 0 0;
+            padding: 12px 18px calc(20px + env(safe-area-inset-bottom));
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.75);
+            transform: translate(-50%, 100%);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .sheet-overlay.open .bottom-sheet {
+            transform: translate(-50%, 0);
+        }
+
+        .sheet-handle {
+            width: 42px;
+            height: 5px;
+            margin: 0 auto 16px;
+            background: #444444;
+            border-radius: 999px;
+        }
+
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .sheet-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .sheet-close {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #292929;
+            border-radius: 50%;
+            background: #1a1a1a;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .sheet-close:hover {
+            background: #252525;
+        }
+
+        .sheet-close:active {
+            transform: scale(0.92);
+        }
+
+        .sheet-close svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .sheet-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sheet-option {
+            width: 100%;
+            min-height: 54px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 16px;
+            border: 1px solid #242424;
+            border-radius: 16px;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .sheet-option:hover {
+            background: #222222;
+        }
+
+        .sheet-option:active {
+            transform: scale(0.98);
+        }
+
+        .sheet-option svg {
+            width: 21px;
+            height: 21px;
+            flex-shrink: 0;
+            fill: none;
+            stroke: #aaaaaa;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sheet-option.logout {
+            color: #ff4d67;
+        }
+
+        .sheet-option.logout svg {
+            stroke: #ff4d67;
+        }
+
+        /* ===== NOTES PAGE ===== */
+        .notes-container {
+            padding: 20px 16px;
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .notes-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .btn-add-note {
+            background: #7c3aed;
+            border: none;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-add-note:hover {
+            background: #6d28d9;
+            transform: scale(1.02);
+        }
+
+        .note-item {
+            background: #111111;
+            border: 1px solid #252525;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .note-item:hover {
+            border-color: #7c3aed;
+        }
+
+        .note-item .note-text {
+            flex: 1;
+            font-size: 15px;
+            color: #eee;
+            word-break: break-word;
+        }
+
+        .note-item .note-time {
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .note-item .delete-note {
+            background: transparent;
+            border: none;
+            color: #ff4d67;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 4px;
+            transition: 0.2s;
+        }
+
+        .note-item .delete-note:hover {
+            color: #ff1a3a;
+            transform: scale(1.2);
+        }
+
+        /* ===== CYBERPUNK CHECKBOX ===== */
+        .cyberpunk-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #30cfd0;
+            border-radius: 5px;
+            background-color: transparent;
+            display: inline-block;
+            position: relative;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .cyberpunk-checkbox:before {
+            content: "";
+            background-color: #30cfd0;
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .cyberpunk-checkbox:checked:before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .cyberpunk-checkbox-label {
+            font-size: 18px;
+            color: #fff;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ===== SEARCH ===== */
+        .search-wrap {
+            padding: 20px 16px 10px 16px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #poda {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .input {
+            background-color: #010201;
+            border: none;
+            width: 100%;
+            height: 56px;
+            border-radius: 10px;
+            color: white;
+            padding-inline: 59px;
+            font-size: 18px;
+        }
+
+        .input::placeholder {
+            color: #c0b9c0;
+        }
+
+        .input:focus {
+            outline: none;
+        }
+
+        #main {
+            position: relative;
+            width: 100%;
+        }
+
+        #search-icon {
+            position: absolute;
+            left: 20px;
+            top: 15px;
+        }
+
+        #filter-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            max-height: 40px;
+            max-width: 38px;
+            height: 100%;
+            width: 100%;
+            isolation: isolate;
+            overflow: hidden;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #161329, black, #1d1b4b);
+            border: 1px solid transparent;
+        }
+
+        .filterBorder {
+            height: 42px;
+            width: 40px;
+            position: absolute;
+            overflow: hidden;
+            top: 7px;
+            right: 7px;
+            border-radius: 10px;
+        }
+
+        .filterBorder::before {
+            content: "";
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(90deg);
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            filter: brightness(1.35);
+            background-image: conic-gradient(rgba(0, 0, 0, 0), #3d3a4f, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 50%, #3d3a4f, rgba(0, 0, 0, 0) 100%);
+            animation: rotate 4s linear infinite;
+        }
+
+        .glow,
+        .darkBorderBg,
+        .white,
+        .border {
+            position: absolute;
+            border-radius: 12px;
+            filter: blur(3px);
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .glow {
+            filter: blur(30px);
+            opacity: 0.4;
+            width: 100%;
+            height: 100%;
+            max-height: 130px;
+            max-width: 354px;
+        }
+
+        .glow::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(60deg);
+            width: 999px;
+            height: 999px;
+            background-image: conic-gradient(#000, #402fb5 5%, #000 38%, #000 50%, #cf30aa 60%, #000 87%);
+            transition: all 2s;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: translate(-50%, -50%) rotate(450deg);
+            }
+        }
+
+        /* ===== INFO CARDS ===== */
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 16px;
+        }
+
+        .info-card {
+            background: #0f0f12;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #1c1c22;
+            transition: 0.2s;
+        }
+
+        .info-card:hover {
+            border-color: #7c3aed;
+        }
+
+        .info-card .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #1c1c22;
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+        }
+
+        .info-card .header .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .info-card .header .title {
+            font-weight: 600;
+            color: #eee;
+        }
+
+        .info-card .header .sub {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .info-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .info-stats .stat {
+            flex: 1;
+        }
+
+        .info-stats .stat .label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .info-stats .stat .value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .info-stats .stat .change {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .change.positive {
+            color: #a3e635;
+        }
+        .change.negative {
+            color: #f87171;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #1c1c22;
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #7c3aed, #a3e635);
+            transition: width 0.6s ease;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 481px) {
+            body {
+                background: #000000;
+            }
+
+            .bottom-nav-wrapper {
+                bottom: 12px;
+            }
+
+            .bottom-sheet {
+                border-bottom: 1px solid #252525;
+                border-radius: 28px;
+                bottom: 12px;
+            }
+
+            .sheet-overlay {
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .nav-button,
+            .nav-button svg,
+            .sheet-overlay,
+            .bottom-sheet,
+            .sheet-close,
+            .sheet-option,
+            .filterBorder::before,
+            .glow::before {
+                transition: none;
+                animation: none;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <video id="bgVideo" autoplay muted loop playsinline></video>
-    <div class="bg-overlay"></div>
+    <div class="app">
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
-
-    <!-- ===== SIDEBAR ===== -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="mainSidebar">
-        <div class="offcanvas-header border-bottom border-white border-opacity-10">
-            <div class="brand"><i class="bi bi-brain"></i> AnkiPro</div>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body p-0 pt-3">
-            <nav class="nav flex-column">
-                <a class="nav-item active" href="#" onclick="navigateTo('home')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
-                <a class="nav-item" href="#" onclick="navigateTo('review')"><i class="bi bi-arrow-repeat"></i> Review Today</a>
-                <a class="nav-item" href="#" onclick="navigateTo('add')"><i class="bi bi-plus-circle"></i> New Card</a>
-                <a class="nav-item" href="#" onclick="navigateTo('list')"><i class="bi bi-table"></i> Card List</a>
-                <a class="nav-item" href="#" onclick="navigateTo('settings')"><i class="bi bi-sliders2"></i> Settings</a>
-                <div class="border-top border-white border-opacity-10 my-3"></div>
-                <a class="nav-item" href="#" onclick="exportData()"><i class="bi bi-download"></i> Export Backup</a>
-                <a class="nav-item" href="#" onclick="document.getElementById('importFile').click()"><i class="bi bi-upload"></i> Import Backup</a>
-                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-                <a class="nav-item" href="#" onclick="manualBackup()"><i class="bi bi-save"></i> Manual Backup</a>
-            </nav>
-        </div>
-    </div>
-
-    <!-- ===== MAIN ===== -->
-    <div class="container py-4" style="max-width:1100px;">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h1 class="text-white fw-bold fs-2"><i class="bi bi-stars text-primary"></i> AnkiPro</h1>
-                <small class="text-secondary">v2.2 · Spaced Repetition Engine</small>
-            </div>
-            <button class="btn btn-pro" data-bs-toggle="offcanvas" data-bs-target="#mainSidebar">
-                <i class="bi bi-list fs-4"></i>
-            </button>
-        </div>
-
-        <div class="timer-bar"><span id="bgProgressBar"></span></div>
-
-        <!-- ===== HOME ===== -->
-        <div id="page-home">
-            <div class="glass">
-                <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" id="statTotal">0</div><small class="text-secondary">Total</small></div></div>
-                    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" id="statDue">0</div><small class="text-secondary">Due Today</small></div></div>
-                    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" id="statReviews">0</div><small class="text-secondary">Reviews</small></div></div>
-                    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" id="statTypes">3</div><small class="text-secondary">Types</small></div></div>
-                </div>
-                <div class="text-center">
-                    <button class="btn btn-primary btn-pro btn-lg px-5" onclick="navigateTo('review')">
-                        <i class="bi bi-play-fill"></i> Start Review
-                    </button>
-                    <p class="text-secondary mt-2 small" id="homeSub">Ready to learn?</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== REVIEW ===== -->
-        <div id="page-review" style="display:none;">
-            <div class="glass" id="reviewContainer">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4><i class="bi bi-arrow-repeat text-success"></i> Review</h4>
-                    <span id="reviewProgress" class="badge bg-light text-dark px-3 py-2">0/0</span>
-                </div>
-                <div id="reviewCardArea">
-                    <div class="text-center py-5">
-                        <i class="bi bi-check-circle-fill text-success" style="font-size:4rem;"></i>
-                        <h4 class="mt-3">All done!</h4>
-                        <p class="text-secondary">No cards due today.</p>
-                        <button class="btn btn-pro mt-3" onclick="navigateTo('home')">Dashboard</button>
+        <!-- ===== SECTIONS ===== -->
+        <main>
+            <section id="worlds" class="section" aria-hidden="true"></section>
+            <section id="others" class="section" aria-hidden="true"></section>
+            <section id="home" class="section active" aria-hidden="false">
+                <!-- جستجوگر -->
+                <div class="search-wrap">
+                    <div id="poda">
+                        <div class="glow"></div>
+                        <div class="darkBorderBg"></div>
+                        <div class="darkBorderBg"></div>
+                        <div class="darkBorderBg"></div>
+                        <div class="white"></div>
+                        <div class="border"></div>
+                        <div id="main">
+                            <input placeholder="Search..." type="text" name="text" class="input" />
+                            <div id="input-mask"></div>
+                            <div id="pink-mask"></div>
+                            <div class="filterBorder"></div>
+                            <div id="filter-icon">
+                                <svg preserveAspectRatio="none" height="27" width="27" viewBox="4.8 4.56 14.832 15.408" fill="none">
+                                    <path d="M8.16 6.65002H15.83C16.47 6.65002 16.99 7.17002 16.99 7.81002V9.09002C16.99 9.56002 16.7 10.14 16.41 10.43L13.91 12.64C13.56 12.93 13.33 13.51 13.33 13.98V16.48C13.33 16.83 13.1 17.29 12.81 17.47L12 17.98C11.24 18.45 10.2 17.92 10.2 16.99V13.91C10.2 13.5 9.97 12.98 9.73 12.69L7.52 10.36C7.23 10.08 7 9.55002 7 9.20002V7.87002C7 7.17002 7.52 6.65002 8.16 6.65002Z" stroke="#d6d6e6" stroke-width="1" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <div id="search-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" height="24" fill="none">
+                                    <circle stroke="url(#search)" r="8" cy="11" cx="11"></circle>
+                                    <line stroke="url(#searchl)" y2="16.65" y1="22" x2="16.65" x1="22"></line>
+                                    <defs>
+                                        <linearGradient gradientTransform="rotate(50)" id="search">
+                                            <stop stop-color="#f8e7f8" offset="0%"></stop>
+                                            <stop stop-color="#b6a9b7" offset="50%"></stop>
+                                        </linearGradient>
+                                        <linearGradient id="searchl">
+                                            <stop stop-color="#b6a9b7" offset="0%"></stop>
+                                            <stop stop-color="#837484" offset="50%"></stop>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- ===== ADD ===== -->
-        <div id="page-add" style="display:none;">
-            <div class="glass">
-                <h4><i class="bi bi-plus-circle-fill text-success"></i> New Card</h4>
-                <hr class="border-light border-opacity-10">
-                <div class="mb-3">
-                    <label class="form-label text-secondary">Type</label>
-                    <select id="cardType" class="form-select" onchange="changeFields()">
-                        <option value="normal">📝 Standard</option>
-                        <option value="coding">💻 Coding & Security</option>
-                        <option value="spanish">🇪🇸 Spanish</option>
-                    </select>
+                <div style="padding: 0 16px; color: #666; text-align: center; font-size: 14px;">
+                    🔍 Search cards, words & categories
                 </div>
-                <div id="fieldsMain">
-                    <div class="mb-2"><input id="f_front" class="form-control" placeholder="Front (Question)"></div>
-                    <div class="mb-2"><input id="f_back" class="form-control" placeholder="Back (Answer)"></div>
+            </section>
+
+            <!-- ===== INFO PAGE ===== -->
+            <section id="info" class="section" aria-hidden="true">
+                <div class="info-grid" id="infoGrid">
+                    <!-- کارت‌ها توسط JS ساخته می‌شوند -->
                 </div>
-                <div id="fieldsExtra" style="display:none;"></div>
-                <button class="btn btn-success btn-pro w-100 mt-3" onclick="addCard()"><i class="bi bi-save"></i> Save</button>
-                <div id="debugMsg" class="mt-2 small text-warning" style="display:none;"></div>
-            </div>
-        </div>
+            </section>
 
-        <!-- ===== LIST ===== -->
-        <div id="page-list" style="display:none;">
-            <div class="glass">
-                <h4><i class="bi bi-table"></i> Card List</h4>
-                <hr class="border-light border-opacity-10">
-                <input id="searchInput" class="form-control mb-3" placeholder="🔍 Search..." oninput="renderList()">
-                <div id="cardListContainer"></div>
-            </div>
-        </div>
-
-        <!-- ===== SETTINGS ===== -->
-        <div id="page-settings" style="display:none;">
-            <div class="glass">
-                <h4><i class="bi bi-sliders2"></i> Settings</h4>
-                <hr class="border-light border-opacity-10">
-                <div class="mb-3">
-                    <label class="form-label text-secondary">🖼️ Background (image or .mp4)</label>
-                    <div class="input-group">
-                        <input id="bgUrl" class="form-control" placeholder="https://..." value="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800">
-                        <button class="btn btn-primary btn-pro" onclick="applyBg()">Apply</button>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label text-secondary">⏱️ Rotate every (minutes)</label>
-                    <input id="bgInterval" type="number" class="form-control" value="1.5" min="0.5" step="0.5">
-                </div>
-                <hr>
-                <button class="btn btn-danger btn-pro me-2" onclick="if(confirm('Delete all cards?')){localStorage.removeItem('ap_cards');updateStats();renderList();showToast('All data cleared.');}"><i class="bi bi-trash"></i> Clear All</button>
-                <button class="btn btn-pro" onclick="restoreBackup()"><i class="bi bi-arrow-counterclockwise"></i> Restore Backup</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // ============================================================
-        // CORE — WORKING ENGINE (tested)
-        // ============================================================
-        const KEY = 'ap_cards';
-        const BACKUP_KEY = 'ap_backup';
-
-        function getCards() {
-            try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; }
-        }
-        function saveCards(cards) {
-            if (!Array.isArray(cards)) throw new Error('Invalid data');
-            localStorage.setItem(KEY, JSON.stringify(cards));
-            localStorage.setItem(BACKUP_KEY, JSON.stringify(cards));
-            updateStats();
-            renderList();
-        }
-
-        // ============================================================
-        // UI HELPERS
-        // ============================================================
-        function showToast(msg) {
-            const c = document.querySelector('.toast-container');
-            const t = document.createElement('div');
-            t.className = 'toast align-items-center text-white border-0 show toast-custom';
-            t.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
-            c.appendChild(t);
-            setTimeout(() => t.remove(), 4000);
-        }
-
-        function updateStats() {
-            const cards = getCards();
-            document.getElementById('statTotal').textContent = cards.length;
-            const today = new Date().toISOString().split('T')[0];
-            const due = cards.filter(c => (c.nextDate || today) <= today).length;
-            document.getElementById('statDue').textContent = due;
-            const rev = cards.reduce((s, c) => s + (c.reviewCount || 0), 0);
-            document.getElementById('statReviews').textContent = rev;
-            const sub = document.getElementById('homeSub');
-            sub.textContent = due ? `🔥 ${due} card(s) due today` : '🎉 All caught up!';
-        }
-
-        function navigateTo(page) {
-            ['home','review','add','list','settings'].forEach(p => {
-                document.getElementById('page-'+p).style.display = (p===page) ? 'block' : 'none';
-            });
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            const map = {home:0, review:1, add:2, list:3, settings:4};
-            const items = document.querySelectorAll('.nav-item');
-            if (map[page] !== undefined && items[map[page]]) items[map[page]].classList.add('active');
-            if (page === 'home') updateStats();
-            if (page === 'list') renderList();
-            if (page === 'review') startReview();
-            try { bootstrap.Offcanvas.getInstance(document.getElementById('mainSidebar'))?.hide(); } catch(e) {}
-        }
-
-        // ============================================================
-        // ADD CARD — WORKS
-        // ============================================================
-        function changeFields() {
-            const type = document.getElementById('cardType').value;
-            const extra = document.getElementById('fieldsExtra');
-            if (type === 'coding') {
-                extra.innerHTML = `<div class="mb-2"><input id="f_code" class="form-control" placeholder="💻 Code Snippet"></div>
-                                   <div class="mb-2"><input id="f_hint" class="form-control" placeholder="🔐 Security Hint"></div>`;
-                extra.style.display = 'block';
-            } else if (type === 'spanish') {
-                extra.innerHTML = `<div class="mb-2"><input id="f_pron" class="form-control" placeholder="🔊 Pronunciation"></div>
-                                   <div class="mb-2"><input id="f_example" class="form-control" placeholder="📝 Example Sentence"></div>`;
-                extra.style.display = 'block';
-            } else { extra.style.display = 'none'; }
-        }
-
-        function addCard() {
-            const debug = document.getElementById('debugMsg');
-            debug.style.display = 'none';
-            try {
-                const type = document.getElementById('cardType').value;
-                const front = document.getElementById('f_front').value.trim();
-                const back = document.getElementById('f_back').value.trim();
-                if (!front || !back) { alert('Fill both fields!'); return; }
-
-                let card = {
-                    id: Date.now(),
-                    type,
-                    front,
-                    back,
-                    interval: 0,
-                    ease: 2.5,
-                    reps: 0,
-                    reviewCount: 0,
-                    nextDate: new Date().toISOString().split('T')[0]
-                };
-                if (type === 'coding') {
-                    card.code = document.getElementById('f_code')?.value || '';
-                    card.hint = document.getElementById('f_hint')?.value || '';
-                } else if (type === 'spanish') {
-                    card.pron = document.getElementById('f_pron')?.value || '';
-                    card.example = document.getElementById('f_example')?.value || '';
-   
+            <!-- ===== NOTES PAGE (NEW) ===== -->
+      
