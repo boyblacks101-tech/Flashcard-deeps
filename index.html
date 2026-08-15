@@ -1,283 +1,333 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnkiBeta | فلش‌کارت حرفه‌ای</title>
-    <!-- Bootstrap 5 RTL & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <title>AnkiPro | Smart Flashcards</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 (Lightweight Grid & Components) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        * { box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #0a0b0e;
+            color: #e8edf5;
             min-height: 100vh;
-            background: #0b0e1a;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            transition: background-image 0.8s ease;
             background-size: cover;
             background-position: center;
+            transition: background-image 0.8s ease;
         }
-        /* ویدیو پس‌زمینه */
         #bgVideo {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -2; display: none;
         }
         .bg-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(8, 12, 25, 0.7);
-            backdrop-filter: blur(3px);
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 11, 14, 0.78);
+            backdrop-filter: blur(2px); z-index: -1;
         }
-        .glass {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 24px;
-            color: #f0f4ff;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-            transition: 0.3s;
+
+        /* ----- SCROLLBAR ----- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1d27; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
+
+        /* ----- SIDEBAR (Offcanvas) ----- */
+        .offcanvas {
+            background: rgba(16, 18, 27, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            width: 280px;
+            color: #c8d0dc;
         }
-        .glass:hover { border-color: rgba(255,255,255,0.25); }
-        .btn-anki {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border-radius: 60px;
-            padding: 10px 24px;
+        .offcanvas .btn-close { filter: invert(1) brightness(2); }
+        .sidebar-brand {
+            font-size: 1.5rem; font-weight: 700;
+            background: linear-gradient(135deg, #818cf8, #4f46e5);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            padding: 20px 0 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-link-pro {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 16px; margin: 4px 8px;
+            border-radius: 12px; color: #9aa3b8 !important;
+            font-weight: 500; transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .nav-link-pro i { font-size: 1.3rem; width: 28px; }
+        .nav-link-pro:hover, .nav-link-pro.active {
+            background: rgba(79, 70, 229, 0.2);
+            color: #ffffff !important;
+            transform: translateX(4px);
+        }
+        .nav-link-pro.danger:hover { background: rgba(239, 68, 68, 0.15); color: #f87171 !important; }
+
+        /* ----- MAIN GLASS CARDS ----- */
+        .glass-panel {
+            background: rgba(22, 26, 38, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 28px;
+            padding: 28px 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px -12px rgba(0,0,0,0.8);
+        }
+        .glass-panel:hover { border-color: rgba(255, 255, 255, 0.1); }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 20px 16px;
+            border: 1px solid rgba(255,255,255,0.04);
             transition: 0.25s;
-            font-weight: 500;
         }
-        .btn-anki:hover {
-            background: rgba(255, 255, 255, 0.25);
-            color: #000;
-            transform: scale(1.02);
+        .stat-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); }
+        .stat-number {
+            font-size: 2.8rem; font-weight: 700; line-height: 1.1;
+            background: linear-gradient(135deg, #a5b4fc, #4f46e5);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .btn-anki-primary { background: #6c5ce7; border-color: #6c5ce7; }
-        .btn-anki-primary:hover { background: #5a4bd1; border-color: #5a4bd1; color: #fff; }
-        .btn-anki-success { background: #00b894; border-color: #00b894; }
-        .btn-anki-success:hover { background: #00a381; color: #fff; }
-        .btn-anki-danger { background: #e17055; border-color: #e17055; }
-        
-        .card-flip {
+
+        .btn-pro {
+            padding: 10px 28px; border-radius: 60px; border: none;
+            font-weight: 600; transition: all 0.25s;
+            background: rgba(255,255,255,0.06);
+            color: #fff; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .btn-pro:hover { background: rgba(255,255,255,0.14); transform: scale(1.02); color: #fff; }
+        .btn-primary-pro { background: #4f46e5; border: 1px solid #4f46e5; }
+        .btn-primary-pro:hover { background: #6366f1; border-color: #6366f1; }
+        .btn-success-pro { background: #059669; border: 1px solid #059669; }
+        .btn-success-pro:hover { background: #10b981; }
+        .btn-danger-pro { background: #dc2626; border: 1px solid #dc2626; }
+        .btn-danger-pro:hover { background: #ef4444; }
+
+        .form-pro {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            color: #fff;
+            padding: 12px 18px;
+            transition: 0.2s;
+        }
+        .form-pro:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+            color: #fff;
+        }
+        .form-pro::placeholder { color: rgba(255,255,255,0.3); }
+        .form-pro option { background: #1a1d27; color: #fff; }
+
+        /* ----- FLIP CARD (PRO) ----- */
+        .flip-container {
             perspective: 1000px;
-            min-height: 250px;
+            min-height: 280px;
             cursor: pointer;
         }
-        .card-flip-inner {
+        .flipper {
             position: relative;
-            width: 100%;
-            min-height: 250px;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            width: 100%; min-height: 280px;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             transform-style: preserve-3d;
         }
-        .card-flip.flipped .card-flip-inner { transform: rotateX(180deg); }
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            min-height: 250px;
+        .flip-container.flipped .flipper { transform: rotateX(180deg); }
+        .front-face, .back-face {
+            position: absolute; width: 100%; min-height: 280px;
             backface-visibility: hidden;
             border-radius: 24px;
             padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: rgba(20, 30, 50, 0.6);
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center;
+            background: rgba(30, 35, 50, 0.8);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.06);
         }
-        .card-back { transform: rotateX(180deg); background: rgba(108, 92, 231, 0.25); }
-        .badge-type { background: #fd79a8; color: #000; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; }
-        .list-item {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 14px 18px;
-            margin-bottom: 10px;
-            border-right: 4px solid #6c5ce7;
+        .back-face { transform: rotateX(180deg); background: rgba(79, 70, 229, 0.15); border-color: rgba(79,70,229,0.2); }
+        .badge-pro { background: rgba(79,70,229,0.3); color: #a5b4fc; padding: 4px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 600; }
+
+        .list-item-pro {
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px; padding: 16px 20px; margin-bottom: 8px;
+            border-left: 3px solid #4f46e5;
             transition: 0.2s;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .list-item:hover { background: rgba(255,255,255,0.1); }
-        .offcanvas { background: rgba(10, 14, 30, 0.95); backdrop-filter: blur(30px); color: #fff; }
-        .offcanvas .btn-close { filter: invert(1); }
-        .nav-link-custom {
-            color: #b0b8d1 !important;
-            padding: 12px 18px;
-            border-radius: 14px;
-            transition: 0.2s;
-            font-weight: 400;
+        .list-item-pro:hover { background: rgba(255,255,255,0.05); }
+
+        .timer-bar {
+            height: 3px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;
         }
-        .nav-link-custom:hover { background: rgba(108, 92, 231, 0.25); color: #fff !important; }
-        .nav-link-custom i { margin-left: 14px; width: 24px; }
-        .timer-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-        .timer-bar span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #6c5ce7, #00b894); transition: width 0.5s linear; }
-        .form-control, .form-select {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            border-radius: 16px;
+        .timer-bar span {
+            display: block; height: 100%; width: 0%;
+            background: linear-gradient(90deg, #4f46e5, #06b6d4);
+            transition: width 0.5s linear;
         }
-        .form-control:focus, .form-select:focus {
-            background: rgba(255,255,255,0.15);
-            border-color: #6c5ce7;
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
-            color: #fff;
+
+        .review-btn-group .btn {
+            border-radius: 60px; padding: 12px 28px; font-weight: 700; min-width: 90px;
+            border: none; transition: 0.2s;
         }
-        .form-control::placeholder { color: rgba(255,255,255,0.4); }
-        label { font-weight: 400; color: #c8d0e6; margin-bottom: 6px; }
+        .review-btn-group .btn:hover { transform: scale(1.05); }
+
+        /* Toast */
         .toast-container { z-index: 9999; }
-        .toast { background: rgba(20, 30, 50, 0.9) !important; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
-        .stat-number { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #6c5ce7, #00b894); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .review-btn-group .btn { border-radius: 60px; padding: 12px 24px; font-weight: 600; min-width: 80px; }
-        @media (max-width: 576px) { .glass { padding: 16px; } .stat-number { font-size: 1.8rem; } }
+        .toast-pro {
+            background: rgba(20, 24, 36, 0.95) !important;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: #fff;
+            border-radius: 16px;
+        }
+
+        @media (max-width: 576px) {
+            .stat-number { font-size: 2rem; }
+            .glass-panel { padding: 16px; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- ویدیو و اوورلی پس‌زمینه -->
+    <!-- Background Elements -->
     <video id="bgVideo" autoplay muted loop playsinline></video>
-    <div class="bg-overlay" id="bgOverlay"></div>
+    <div class="bg-overlay"></div>
 
-    <!-- توست‌ها -->
+    <!-- Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
-    <!-- ===== منوی کشویی ===== -->
+    <!-- ===== SIDEBAR ===== -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mainSidebar">
-        <div class="offcanvas-header border-bottom border-light border-opacity-10">
-            <h5 class="offcanvas-title"><i class="bi bi-stars text-warning"></i> منوی AnkiBeta</h5>
+        <div class="offcanvas-header border-bottom border-white border-opacity-10">
+            <div class="sidebar-brand"><i class="bi bi-brain"></i> AnkiPro</div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
-        <div class="offcanvas-body">
-            <div class="nav flex-column">
-                <a class="nav-link-custom" href="#" onclick="navigateTo('home')"><i class="bi bi-house-door"></i> داشبورد</a>
-                <a class="nav-link-custom" href="#" onclick="navigateTo('review')"><i class="bi bi-arrow-repeat"></i> مرور امروز</a>
-                <a class="nav-link-custom" href="#" onclick="navigateTo('add')"><i class="bi bi-plus-circle"></i> کارت جدید</a>
-                <a class="nav-link-custom" href="#" onclick="navigateTo('list')"><i class="bi bi-list-ul"></i> لیست کارت‌ها</a>
-                <a class="nav-link-custom" href="#" onclick="navigateTo('settings')"><i class="bi bi-gear"></i> تنظیمات</a>
-                <hr class="bg-light bg-opacity-10">
-                <a class="nav-link-custom" href="#" onclick="exportData()"><i class="bi bi-download"></i> خروجی (Export)</a>
-                <a class="nav-link-custom" href="#" onclick="document.getElementById('importFile').click()"><i class="bi bi-upload"></i> بازیابی (Import)</a>
+        <div class="offcanvas-body p-0 pt-3">
+            <nav class="nav flex-column">
+                <a class="nav-link-pro active" href="#" onclick="navigateTo('home')"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+                <a class="nav-link-pro" href="#" onclick="navigateTo('review')"><i class="bi bi-arrow-repeat"></i> Review Today</a>
+                <a class="nav-link-pro" href="#" onclick="navigateTo('add')"><i class="bi bi-plus-circle"></i> New Card</a>
+                <a class="nav-link-pro" href="#" onclick="navigateTo('list')"><i class="bi bi-table"></i> Card List</a>
+                <a class="nav-link-pro" href="#" onclick="navigateTo('settings')"><i class="bi bi-sliders2"></i> Settings</a>
+                <div class="border-top border-white border-opacity-10 my-3"></div>
+                <a class="nav-link-pro" href="#" onclick="exportData()"><i class="bi bi-download"></i> Export Backup</a>
+                <a class="nav-link-pro" href="#" onclick="document.getElementById('importFile').click()"><i class="bi bi-upload"></i> Import Backup</a>
                 <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-            </div>
+                <a class="nav-link-pro danger" href="#" onclick="manualBackup()"><i class="bi bi-save"></i> Manual Save</a>
+            </nav>
         </div>
     </div>
 
-    <!-- ===== محتوای اصلی ===== -->
-    <div class="container py-4">
-        <!-- هدر -->
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container py-4" style="max-width: 1100px;">
+        <!-- Top Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="text-white fw-bold"><i class="bi bi-brain text-warning"></i> AnkiBeta</h1>
-                <small class="text-light opacity-50">نسخه ۰.۹ بتا | قدرتمند مثل انکی</small>
+                <h1 class="text-white fw-bold fs-2"><i class="bi bi-stars text-primary"></i> AnkiPro</h1>
+                <small class="text-secondary">Beta v2.0 · Professional Flashcards</small>
             </div>
-            <button class="btn btn-anki btn-lg" data-bs-toggle="offcanvas" data-bs-target="#mainSidebar">
-                <i class="bi bi-list"></i>
+            <button class="btn btn-pro" data-bs-toggle="offcanvas" data-bs-target="#mainSidebar">
+                <i class="bi bi-list fs-4"></i>
             </button>
         </div>
 
-        <!-- نوار پیشرفت تایمر پس‌زمینه -->
-        <div class="timer-bar mb-3"><span id="bgProgressBar" style="width:0%"></span></div>
+        <!-- Timer Bar -->
+        <div class="timer-bar mb-4"><span id="bgProgressBar"></span></div>
 
-        <!-- ===== صفحه HOME ===== -->
+        <!-- ======================= PAGE: HOME ======================= -->
         <div id="page-home">
-            <div class="glass text-center">
-                <div class="row g-3">
-                    <div class="col-6 col-md-3"><div class="stat-number" id="statTotal">0</div><small>کل کارت‌ها</small></div>
-                    <div class="col-6 col-md-3"><div class="stat-number" id="statDue">0</div><small>امروز برای مرور</small></div>
-                    <div class="col-6 col-md-3"><div class="stat-number" id="statReviewed">0</div><small>کل مرورها</small></div>
-                    <div class="col-6 col-md-3"><div class="stat-number" id="statType">3</div><small>نوع کارت</small></div>
+            <div class="glass-panel">
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number" id="statTotal">0</div><small class="text-secondary">Total Cards</small></div></div>
+                    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number" id="statDue">0</div><small class="text-secondary">Due Today</small></div></div>
+                    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number" id="statReviewed">0</div><small class="text-secondary">Total Reviews</small></div></div>
+                    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number" id="statTypes">3</div><small class="text-secondary">Card Types</small></div></div>
                 </div>
-                <hr class="border-light border-opacity-10">
-                <button class="btn btn-anki btn-anki-primary btn-lg px-5" onclick="navigateTo('review')">
-                    <i class="bi bi-play-fill"></i> شروع مرور امروز
-                </button>
-                <p class="mt-2 text-light opacity-50 small">کارت‌های عقب‌افتاده هم نمایش داده می‌شوند</p>
+                <div class="text-center mt-2">
+                    <button class="btn btn-primary-pro btn-pro btn-lg px-5" onclick="navigateTo('review')">
+                        <i class="bi bi-play-fill"></i> Start Review Session
+                    </button>
+                    <p class="text-secondary mt-2 small" id="homeSubText">Cards with past due dates are prioritized.</p>
+                </div>
             </div>
         </div>
 
-        <!-- ===== صفحه REVIEW ===== -->
+        <!-- ======================= PAGE: REVIEW ======================= -->
         <div id="page-review" style="display:none;">
-            <div class="glass" id="reviewContainer">
+            <div class="glass-panel" id="reviewContainer">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4><i class="bi bi-arrow-repeat text-success"></i> مرور</h4>
-                    <span id="reviewProgress" class="badge bg-light text-dark">۰ / ۰</span>
+                    <h4><i class="bi bi-arrow-repeat text-success"></i> Review Session</h4>
+                    <span id="reviewProgress" class="badge bg-light text-dark px-3 py-2">0 / 0</span>
                 </div>
                 <div id="reviewCardArea">
                     <div class="text-center py-5">
-                        <i class="bi bi-check-circle-fill text-success" style="font-size:3rem;"></i>
-                        <h5 class="mt-3">همه‌ی کارت‌های امروز رو مرور کردی! 🎉</h5>
-                        <button class="btn btn-anki mt-3" onclick="navigateTo('home')">برگشت به داشبورد</button>
+                        <i class="bi bi-check-circle-fill text-success" style="font-size:4rem;"></i>
+                        <h4 class="mt-3">All caught up!</h4>
+                        <p class="text-secondary">No cards due for review today.</p>
+                        <button class="btn btn-pro mt-3" onclick="navigateTo('home')">Back to Dashboard</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ===== صفحه ADD ===== -->
+        <!-- ======================= PAGE: ADD ======================= -->
         <div id="page-add" style="display:none;">
-            <div class="glass">
-                <h4><i class="bi bi-plus-circle-fill text-success"></i> کارت جدید</h4>
-                <hr>
+            <div class="glass-panel">
+                <h4><i class="bi bi-plus-circle-fill text-success"></i> Create New Card</h4>
+                <hr class="border-light border-opacity-10">
                 <div class="mb-3">
-                    <label>نوع کارت</label>
-                    <select id="cardType" class="form-select" onchange="changeCardFields()">
-                        <option value="normal">📝 معمولی (Front / Back)</option>
-                        <option value="coding">💻 کدنویسی و امنیت</option>
-                        <option value="spanish">🇪🇸 اسپانیایی</option>
+                    <label class="form-label text-secondary">Card Type</label>
+                    <select id="cardType" class="form-select form-pro" onchange="changeCardFields()">
+                        <option value="normal">📝 Standard (Front / Back)</option>
+                        <option value="coding">💻 Coding & Security</option>
+                        <option value="spanish">🇪🇸 Spanish Language</option>
                     </select>
                 </div>
                 <div id="dynamicFields">
-                    <div class="mb-2"><input id="f_front" class="form-control" placeholder="متن جلو (Front)"></div>
-                    <div class="mb-2"><input id="f_back" class="form-control" placeholder="متن پشت (Back)"></div>
+                    <div class="mb-2"><input id="f_front" class="form-control form-pro" placeholder="Front text (e.g. Question)"></div>
+                    <div class="mb-2"><input id="f_back" class="form-control form-pro" placeholder="Back text (e.g. Answer)"></div>
                 </div>
                 <div id="extraFields" style="display:none;"></div>
-                <button class="btn btn-anki btn-anki-success w-100 mt-3" onclick="addCard()"><i class="bi bi-save"></i> ذخیره</button>
+                <button class="btn btn-success-pro btn-pro w-100 mt-3" onclick="addCard()"><i class="bi bi-save"></i> Save Card</button>
             </div>
         </div>
 
-        <!-- ===== صفحه LIST ===== -->
+        <!-- ======================= PAGE: LIST ======================= -->
         <div id="page-list" style="display:none;">
-            <div class="glass">
-                <h4><i class="bi bi-table"></i> لیست کارت‌ها</h4>
-                <hr>
-                <input id="searchInput" class="form-control mb-3" placeholder="🔍 جستجو در کارت‌ها..." oninput="renderList()">
+            <div class="glass-panel">
+                <h4><i class="bi bi-table"></i> Card Library</h4>
+                <hr class="border-light border-opacity-10">
+                <input id="searchInput" class="form-control form-pro mb-3" placeholder="🔍 Search cards..." oninput="renderList()">
                 <div id="cardListContainer"></div>
             </div>
         </div>
 
-        <!-- ===== صفحه SETTINGS ===== -->
+        <!-- ======================= PAGE: SETTINGS ======================= -->
         <div id="page-settings" style="display:none;">
-            <div class="glass">
-                <h4><i class="bi bi-sliders2"></i> تنظیمات</h4>
-                <hr>
+            <div class="glass-panel">
+                <h4><i class="bi bi-sliders2"></i> Pro Settings</h4>
+                <hr class="border-light border-opacity-10">
                 <div class="mb-3">
-                    <label>📅 تاریخ شمسی (ورودی)</label>
-                    <input id="shamsiDateInput" class="form-control" placeholder="مثلاً 1405/05/25">
-                </div>
-                <div class="mb-3">
-                    <label>🖼️ لینک تصویر یا ویدیو (پس‌زمینه)</label>
+                    <label class="form-label text-secondary">🖼️ Background URL (Image or .mp4)</label>
                     <div class="input-group">
-                        <input id="bgUrlInput" class="form-control" placeholder="https://...jpg یا .mp4" value="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800">
-                        <button class="btn btn-anki-primary" onclick="applyBackground()">اعمال</button>
+                        <input id="bgUrlInput" class="form-control form-pro" placeholder="https://example.com/image.jpg" value="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800">
+                        <button class="btn btn-primary-pro btn-pro" onclick="applyBackground()">Apply</button>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label>⏱️ تغییر خودکار (دقیقه)</label>
-                    <input id="bgIntervalInput" type="number" class="form-control" value="1" min="0.5" step="0.5">
+                    <label class="form-label text-secondary">⏱️ Auto-rotate every (minutes)</label>
+                    <input id="bgIntervalInput" type="number" class="form-control form-pro" value="1.5" min="0.5" step="0.5">
                 </div>
-                <hr>
-                <div class="mb-3">
-                    <label>📂 پشتیبان خودکار (فعال)</label>
-                    <button class="btn btn-anki btn-sm" onclick="manualBackup()"><i class="bi bi-save"></i> بکاپ دستی</button>
-                    <button class="btn btn-anki btn-sm btn-anki-danger" onclick="restoreBackup()"><i class="bi bi-arrow-counterclockwise"></i> بازیابی بکاپ</button>
+                <hr class="border-light border-opacity-10">
+                <div>
+                    <button class="btn btn-pro btn-danger-pro me-2" onclick="if(confirm('Clear all cards?')){localStorage.removeItem('anki_beta_cards');updateStats();renderList();showToast('🗑️ All data cleared.');}"><i class="bi bi-trash"></i> Clear Data</button>
+                    <button class="btn btn-pro" onclick="restoreBackup()"><i class="bi bi-arrow-counterclockwise"></i> Restore Last Save</button>
                 </div>
             </div>
         </div>
@@ -286,14 +336,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ==========================================
-        //  هسته مرکزی
+        // CORE DATABASE
         // ==========================================
         const STORAGE_KEY = 'anki_beta_cards';
         const BACKUP_KEY = 'anki_beta_backup';
         let reviewQueue = [];
         let currentReviewIndex = 0;
 
-        // ---------- دیتابیس ----------
         function getCards() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
         function saveCards(cards) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
@@ -303,7 +352,9 @@
             renderList();
         }
 
-        // ---------- آمار و نوتیف ----------
+        // ==========================================
+        // STATS & NOTIFICATIONS
+        // ==========================================
         function updateStats() {
             const cards = getCards();
             document.getElementById('statTotal').innerText = cards.length;
@@ -312,85 +363,36 @@
             document.getElementById('statDue').innerText = due;
             const reviews = cards.reduce((acc, c) => acc + (c.reviewCount || 0), 0);
             document.getElementById('statReviewed').innerText = reviews;
+            // Update subtitle
+            const sub = document.getElementById('homeSubText');
+            if (due > 0) sub.innerText = `🔥 ${due} card(s) waiting for review!`;
+            else sub.innerText = '🎉 All caught up! No pending reviews.';
         }
+
         function checkNotification(count) {
-            if (count > 0 && count % 10 === 0) showToast(`🎉 تبریک! به ${count} کارت رسیدی!`);
+            if (count > 0 && count % 10 === 0) showToast(`🎉 Achievement! ${count} cards created!`);
         }
+
         function showToast(msg) {
             const container = document.querySelector('.toast-container');
             const t = document.createElement('div');
-            t.className = 'toast align-items-center text-white border-0 show';
+            t.className = 'toast align-items-center text-white border-0 show toast-pro';
             t.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
             container.appendChild(t);
             setTimeout(() => t.remove(), 5000);
         }
 
-        // ---------- ناوبری ----------
+        // ==========================================
+        // NAVIGATION
+        // ==========================================
         function navigateTo(page) {
             ['home','review','add','list','settings'].forEach(p => {
                 document.getElementById(`page-${p}`).style.display = (p === page) ? 'block' : 'none';
             });
-            if (page === 'home') updateStats();
-            if (page === 'list') renderList();
-            if (page === 'review') startReview();
-            try { bootstrap.Offcanvas.getInstance(document.getElementById('mainSidebar'))?.hide(); } catch(e) {}
-        }
-
-        // ---------- فیلدهای پویا ----------
-        function changeCardFields() {
-            const type = document.getElementById('cardType').value;
-            const extra = document.getElementById('extraFields');
-            let html = '';
-            if (type === 'coding') {
-                html = `<div class="mb-2"><input id="f_code" class="form-control" placeholder="💻 قطعه کد"></div>
-                        <div class="mb-2"><input id="f_hint" class="form-control" placeholder="🔐 نکته امنیتی"></div>`;
-                extra.style.display = 'block';
-            } else if (type === 'spanish') {
-                html = `<div class="mb-2"><input id="f_pron" class="form-control" placeholder="🔊 تلفظ"></div>
-                        <div class="mb-2"><input id="f_example" class="form-control" placeholder="📝 مثال جمله"></div>`;
-                extra.style.display = 'block';
-            } else { extra.style.display = 'none'; }
-            extra.innerHTML = html;
-        }
-        window.onload = function() {
-            changeCardFields();
-            applyBackground();
-            updateStats();
-            renderList();
-            loadSettings();
-            startBgTimer();
-            navigateTo('home');
-        };
-
-        // ---------- افزودن کارت ----------
-        function addCard() {
-            const type = document.getElementById('cardType').value;
-            const front = document.getElementById('f_front').value.trim();
-            const back = document.getElementById('f_back').value.trim();
-            if (!front || !back) return alert('لطفاً جلو و پشت را پر کن!');
-            let card = { id: Date.now(), type, front, back, interval: 0, easeFactor: 2.5, repetitions: 0, reviewCount: 0, nextReviewDate: new Date().toISOString().split('T')[0] };
-            if (type === 'coding') { card.codeSnippet = document.getElementById('f_code')?.value || ''; card.hint = document.getElementById('f_hint')?.value || ''; }
-            if (type === 'spanish') { card.pronunciation = document.getElementById('f_pron')?.value || ''; card.exampleSentence = document.getElementById('f_example')?.value || ''; }
-            const cards = getCards();
-            cards.push(card);
-            saveCards(cards);
-            document.querySelectorAll('#page-add input').forEach(i => i.value = '');
-            showToast('✅ کارت اضافه شد!');
-            navigateTo('list');
-        }
-
-        // ---------- رندر لیست با جستجو ----------
-        function renderList() {
-            const container = document.getElementById('cardListContainer');
-            let cards = getCards();
-            const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
-            if (q) cards = cards.filter(c => c.front.includes(q) || c.back.includes(q));
-            if (!cards.length) { container.innerHTML = '<p class="text-light opacity-50">کارتی پیدا نشد.</p>'; return; }
-            let html = '';
-            cards.slice().reverse().forEach(c => {
-                let extra = '';
-                if (c.type === 'coding') extra = `| 💻 ${c.codeSnippet || '-'} | 🔐 ${c.hint || '-'}`;
-                else if (c.type === 'spanish') extra = `| 🔊 ${c.pronunciation || '-'} | 📝 ${c.exampleSentence || '-'}`;
-                const due = (c.nextReviewDate || '') <= new Date().toISOString().split('T')[0] ? '🔴' : '✅';
-                html += `<div class="list-item d-flex justify-content-between align-items-center">
-                    <div><span class="badge-type">${c.type}</span>
+            // Update sidebar active
+            document.querySelectorAll('.nav-link-pro').forEach(el => el.classList.remove('active'));
+            const links = document.querySelectorAll('.nav-link-pro');
+            const map = { 'home':0, 'review':1, 'add':2, 'list':3, 'settings':4 };
+            if (map[page] !== undefined && links[map[page]]) links[map[page]].classList.add('active');
+            
+            if (page === 'home') updateStats(
