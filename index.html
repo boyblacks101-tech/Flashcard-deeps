@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AnkiPro | Smart Flashcards</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- Bootstrap 5 (Lightweight Grid & Components) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,17 +27,13 @@
             background: rgba(10, 11, 14, 0.78);
             backdrop-filter: blur(2px); z-index: -1;
         }
-
-        /* ----- SCROLLBAR ----- */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #1a1d27; }
         ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
 
-        /* ----- SIDEBAR (Offcanvas) ----- */
         .offcanvas {
             background: rgba(16, 18, 27, 0.95);
             backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
             border-right: 1px solid rgba(255,255,255,0.05);
             width: 280px;
             color: #c8d0dc;
@@ -66,21 +59,15 @@
             color: #ffffff !important;
             transform: translateX(4px);
         }
-        .nav-link-pro.danger:hover { background: rgba(239, 68, 68, 0.15); color: #f87171 !important; }
-
-        /* ----- MAIN GLASS CARDS ----- */
         .glass-panel {
             background: rgba(22, 26, 38, 0.7);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 28px;
             padding: 28px 24px;
             transition: all 0.3s ease;
             box-shadow: 0 20px 60px -12px rgba(0,0,0,0.8);
         }
-        .glass-panel:hover { border-color: rgba(255, 255, 255, 0.1); }
-
         .stat-card {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 20px;
@@ -88,13 +75,11 @@
             border: 1px solid rgba(255,255,255,0.04);
             transition: 0.25s;
         }
-        .stat-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); }
         .stat-number {
             font-size: 2.8rem; font-weight: 700; line-height: 1.1;
             background: linear-gradient(135deg, #a5b4fc, #4f46e5);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
         .btn-pro {
             padding: 10px 28px; border-radius: 60px; border: none;
             font-weight: 600; transition: all 0.25s;
@@ -103,7 +88,7 @@
         }
         .btn-pro:hover { background: rgba(255,255,255,0.14); transform: scale(1.02); color: #fff; }
         .btn-primary-pro { background: #4f46e5; border: 1px solid #4f46e5; }
-        .btn-primary-pro:hover { background: #6366f1; border-color: #6366f1; }
+        .btn-primary-pro:hover { background: #6366f1; }
         .btn-success-pro { background: #059669; border: 1px solid #059669; }
         .btn-success-pro:hover { background: #10b981; }
         .btn-danger-pro { background: #dc2626; border: 1px solid #dc2626; }
@@ -124,9 +109,6 @@
             color: #fff;
         }
         .form-pro::placeholder { color: rgba(255,255,255,0.3); }
-        .form-pro option { background: #1a1d27; color: #fff; }
-
-        /* ----- FLIP CARD (PRO) ----- */
         .flip-container {
             perspective: 1000px;
             min-height: 280px;
@@ -150,9 +132,8 @@
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.06);
         }
-        .back-face { transform: rotateX(180deg); background: rgba(79, 70, 229, 0.15); border-color: rgba(79,70,229,0.2); }
+        .back-face { transform: rotateX(180deg); background: rgba(79, 70, 229, 0.15); }
         .badge-pro { background: rgba(79,70,229,0.3); color: #a5b4fc; padding: 4px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 600; }
-
         .list-item-pro {
             background: rgba(255,255,255,0.02);
             border-radius: 16px; padding: 16px 20px; margin-bottom: 8px;
@@ -161,7 +142,6 @@
             display: flex; justify-content: space-between; align-items: center;
         }
         .list-item-pro:hover { background: rgba(255,255,255,0.05); }
-
         .timer-bar {
             height: 3px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;
         }
@@ -170,14 +150,11 @@
             background: linear-gradient(90deg, #4f46e5, #06b6d4);
             transition: width 0.5s linear;
         }
-
         .review-btn-group .btn {
             border-radius: 60px; padding: 12px 28px; font-weight: 700; min-width: 90px;
             border: none; transition: 0.2s;
         }
         .review-btn-group .btn:hover { transform: scale(1.05); }
-
-        /* Toast */
         .toast-container { z-index: 9999; }
         .toast-pro {
             background: rgba(20, 24, 36, 0.95) !important;
@@ -186,7 +163,6 @@
             color: #fff;
             border-radius: 16px;
         }
-
         @media (max-width: 576px) {
             .stat-number { font-size: 2rem; }
             .glass-panel { padding: 16px; }
@@ -195,11 +171,9 @@
 </head>
 <body>
 
-    <!-- Background Elements -->
     <video id="bgVideo" autoplay muted loop playsinline></video>
     <div class="bg-overlay"></div>
 
-    <!-- Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
     <!-- ===== SIDEBAR ===== -->
@@ -219,28 +193,26 @@
                 <a class="nav-link-pro" href="#" onclick="exportData()"><i class="bi bi-download"></i> Export Backup</a>
                 <a class="nav-link-pro" href="#" onclick="document.getElementById('importFile').click()"><i class="bi bi-upload"></i> Import Backup</a>
                 <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-                <a class="nav-link-pro danger" href="#" onclick="manualBackup()"><i class="bi bi-save"></i> Manual Save</a>
+                <a class="nav-link-pro" href="#" onclick="manualBackup()"><i class="bi bi-save"></i> Manual Save</a>
             </nav>
         </div>
     </div>
 
     <!-- ===== MAIN CONTENT ===== -->
     <div class="container py-4" style="max-width: 1100px;">
-        <!-- Top Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="text-white fw-bold fs-2"><i class="bi bi-stars text-primary"></i> AnkiPro</h1>
-                <small class="text-secondary">Beta v2.0 · Professional Flashcards</small>
+                <small class="text-secondary">Beta v2.1 · Professional Flashcards</small>
             </div>
             <button class="btn btn-pro" data-bs-toggle="offcanvas" data-bs-target="#mainSidebar">
                 <i class="bi bi-list fs-4"></i>
             </button>
         </div>
 
-        <!-- Timer Bar -->
         <div class="timer-bar mb-4"><span id="bgProgressBar"></span></div>
 
-        <!-- ======================= PAGE: HOME ======================= -->
+        <!-- PAGE: HOME -->
         <div id="page-home">
             <div class="glass-panel">
                 <div class="row g-3 mb-4">
@@ -258,7 +230,7 @@
             </div>
         </div>
 
-        <!-- ======================= PAGE: REVIEW ======================= -->
+        <!-- PAGE: REVIEW -->
         <div id="page-review" style="display:none;">
             <div class="glass-panel" id="reviewContainer">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -276,7 +248,7 @@
             </div>
         </div>
 
-        <!-- ======================= PAGE: ADD ======================= -->
+        <!-- PAGE: ADD (FIXED) -->
         <div id="page-add" style="display:none;">
             <div class="glass-panel">
                 <h4><i class="bi bi-plus-circle-fill text-success"></i> Create New Card</h4>
@@ -294,11 +266,13 @@
                     <div class="mb-2"><input id="f_back" class="form-control form-pro" placeholder="Back text (e.g. Answer)"></div>
                 </div>
                 <div id="extraFields" style="display:none;"></div>
+                <!-- FIXED BUTTON with explicit error handling -->
                 <button class="btn btn-success-pro btn-pro w-100 mt-3" onclick="addCard()"><i class="bi bi-save"></i> Save Card</button>
+                <div id="debugMessage" class="mt-2 text-warning small" style="display:none;"></div>
             </div>
         </div>
 
-        <!-- ======================= PAGE: LIST ======================= -->
+        <!-- PAGE: LIST -->
         <div id="page-list" style="display:none;">
             <div class="glass-panel">
                 <h4><i class="bi bi-table"></i> Card Library</h4>
@@ -308,7 +282,7 @@
             </div>
         </div>
 
-        <!-- ======================= PAGE: SETTINGS ======================= -->
+        <!-- PAGE: SETTINGS -->
         <div id="page-settings" style="display:none;">
             <div class="glass-panel">
                 <h4><i class="bi bi-sliders2"></i> Pro Settings</h4>
@@ -336,37 +310,55 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // ==========================================
-        // CORE DATABASE
+        // CORE DATABASE WITH ERROR HANDLING
         // ==========================================
         const STORAGE_KEY = 'anki_beta_cards';
         const BACKUP_KEY = 'anki_beta_backup';
         let reviewQueue = [];
         let currentReviewIndex = 0;
 
-        function getCards() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+        function getCards() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                console.error("Error reading storage:", e);
+                return [];
+            }
+        }
+
         function saveCards(cards) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
-            localStorage.setItem(BACKUP_KEY, JSON.stringify(cards));
-            updateStats();
-            checkNotification(cards.length);
-            renderList();
+            try {
+                if (!Array.isArray(cards)) throw new Error("Data is not an array");
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+                localStorage.setItem(BACKUP_KEY, JSON.stringify(cards));
+                updateStats();
+                checkNotification(cards.length);
+                renderList();
+                return true;
+            } catch (e) {
+                console.error("Error saving cards:", e);
+                alert("❌ Failed to save card! Error: " + e.message + "\n\nPossible reasons:\n- Storage is full\n- Browser privacy settings\n- Try clearing some data.");
+                return false;
+            }
         }
 
         // ==========================================
         // STATS & NOTIFICATIONS
         // ==========================================
         function updateStats() {
-            const cards = getCards();
-            document.getElementById('statTotal').innerText = cards.length;
-            const today = new Date().toISOString().split('T')[0];
-            const due = cards.filter(c => (c.nextReviewDate || today) <= today).length;
-            document.getElementById('statDue').innerText = due;
-            const reviews = cards.reduce((acc, c) => acc + (c.reviewCount || 0), 0);
-            document.getElementById('statReviewed').innerText = reviews;
-            // Update subtitle
-            const sub = document.getElementById('homeSubText');
-            if (due > 0) sub.innerText = `🔥 ${due} card(s) waiting for review!`;
-            else sub.innerText = '🎉 All caught up! No pending reviews.';
+            try {
+                const cards = getCards();
+                document.getElementById('statTotal').innerText = cards.length;
+                const today = new Date().toISOString().split('T')[0];
+                const due = cards.filter(c => (c.nextReviewDate || today) <= today).length;
+                document.getElementById('statDue').innerText = due;
+                const reviews = cards.reduce((acc, c) => acc + (c.reviewCount || 0), 0);
+                document.getElementById('statReviewed').innerText = reviews;
+                const sub = document.getElementById('homeSubText');
+                if (due > 0) sub.innerText = `🔥 ${due} card(s) waiting for review!`;
+                else sub.innerText = '🎉 All caught up! No pending reviews.';
+            } catch (e) { console.warn("Stats error:", e); }
         }
 
         function checkNotification(count) {
@@ -374,12 +366,15 @@
         }
 
         function showToast(msg) {
-            const container = document.querySelector('.toast-container');
-            const t = document.createElement('div');
-            t.className = 'toast align-items-center text-white border-0 show toast-pro';
-            t.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
-            container.appendChild(t);
-            setTimeout(() => t.remove(), 5000);
+            try {
+                const container = document.querySelector('.toast-container');
+                if (!container) return;
+                const t = document.createElement('div');
+                t.className = 'toast align-items-center text-white border-0 show toast-pro';
+                t.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+                container.appendChild(t);
+                setTimeout(() => t.remove(), 5000);
+            } catch (e) { console.warn("Toast error:", e); }
         }
 
         // ==========================================
@@ -387,12 +382,14 @@
         // ==========================================
         function navigateTo(page) {
             ['home','review','add','list','settings'].forEach(p => {
-                document.getElementById(`page-${p}`).style.display = (p === page) ? 'block' : 'none';
+                const el = document.getElementById(`page-${p}`);
+                if (el) el.style.display = (p === page) ? 'block' : 'none';
             });
-            // Update sidebar active
             document.querySelectorAll('.nav-link-pro').forEach(el => el.classList.remove('active'));
             const links = document.querySelectorAll('.nav-link-pro');
             const map = { 'home':0, 'review':1, 'add':2, 'list':3, 'settings':4 };
             if (map[page] !== undefined && links[map[page]]) links[map[page]].classList.add('active');
             
-            if (page === 'home') updateStats(
+            if (page === 'home') updateStats();
+            if (page === 'list') renderList();
+            if (page === '
